@@ -26,7 +26,8 @@ namespace Infrastructure.Services
 
         public async Task<IEnumerable<Catalogue>> GetBoardCatalog(string board)
         {
-            return await JsonSerializer.DeserializeAsync<IEnumerable<Catalogue>>(await _httpClient.GetStreamAsync($"/{board}/catalog.json"), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }).ConfigureAwait(false);
+            var catalog = await JsonSerializer.DeserializeAsync<IEnumerable<Catalogue>>(await _httpClient.GetStreamAsync($"catalog/{board}"), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }).ConfigureAwait(false);
+            return catalog;
         }
 
 
