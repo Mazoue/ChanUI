@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Chan_UI.Data;
+using Framework.Interfaces.Services;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Chan_UI.Data;
+using System;
 
 namespace Chan_UI
 {
@@ -29,6 +26,16 @@ namespace Chan_UI
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddHttpClient<IBoardService, BoardService>(client =>
+            {
+                client.BaseAddress = new Uri("http://192.168.1.8:2223/api/post/");
+
+            });
+            services.AddHttpClient<IImageService, ImageService>(client =>
+            {
+                client.BaseAddress = new Uri("http://192.168.1.8:2223");
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
