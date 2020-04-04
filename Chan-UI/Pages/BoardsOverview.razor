@@ -13,6 +13,8 @@ else if (FullBoard.Threads == null)
     <table class="table">
         <thead>
             <tr>
+                <th></th>
+                <th></th>
                 <th>Board</th>
                 <th>Description</th>
 
@@ -21,10 +23,12 @@ else if (FullBoard.Threads == null)
         <tbody>
             @foreach (var board in FullBoard.Boards.boards)
             {
-                <tr>
-                    <td @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">@board.board</td>
-                    <td>@WebUtility.HtmlDecode(board.meta_description)</td>
-                </tr>
+            <tr>
+                <td><button type="button" @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">Download All</button></td>
+                <td><button type="button" @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">Expand</button></td>
+                <td>@board.board</td>
+                <td>@WebUtility.HtmlDecode(board.meta_description)</td>
+            </tr>
             }
         </tbody>
     </table>

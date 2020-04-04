@@ -1,4 +1,3 @@
-using Chan_UI.Data;
 using Framework.Interfaces.Services;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
@@ -25,15 +24,16 @@ namespace Chan_UI
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddHttpClient<IBoardService, BoardService>(client =>
             {
-                client.BaseAddress = new Uri("http://192.168.1.8:2223/api/post/");
+                // client.BaseAddress = new Uri("http://192.168.1.8:2223/api/post/");
+                client.BaseAddress = new Uri("https://localhost:44317/api/post/");
 
             });
             services.AddHttpClient<IImageService, ImageService>(client =>
             {
-                client.BaseAddress = new Uri("http://192.168.1.8:2223");
+                //  client.BaseAddress = new Uri("http://192.168.1.8:2223");
+                client.BaseAddress = new Uri("https://localhost:44317");
 
             });
         }
@@ -44,7 +44,7 @@ namespace Chan_UI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
+            }//
             else
             {
                 app.UseExceptionHandler("/Error");

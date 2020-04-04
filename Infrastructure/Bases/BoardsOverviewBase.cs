@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Framework.Datamodels;
+﻿using Framework.Datamodels;
 using Framework.Interfaces.Services;
 using Microsoft.AspNetCore.Components;
+using System;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Bases
 {
@@ -17,11 +14,11 @@ namespace Infrastructure.Bases
         public IImageService ImageDataService { get; set; }
 
         public FullBoard FullBoard { get; set; }
-        
+
 
         protected override async Task OnInitializedAsync()
         {
-            FullBoard = new FullBoard {Boards = await BoardDataService.GetAllBoards().ConfigureAwait(false)};
+            FullBoard = new FullBoard { Boards = await BoardDataService.GetAllBoards().ConfigureAwait(false) };
 
         }
 
