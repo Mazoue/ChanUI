@@ -9,6 +9,6 @@ namespace Framework.Interfaces.Services
     {
         Task<AllBoards> GetAllBoards();
         Task<IEnumerable<Catalogue>> GetBoardCatalog(string board);
-        Task<ThreadPosts> GetThreadPosts(string board, string threadNumber);
+        Task<ThreadPosts> GetThreadPosts(string board, long threadNumber);
     }
 }

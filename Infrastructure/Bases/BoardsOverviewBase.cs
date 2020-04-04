@@ -11,6 +11,7 @@ namespace Infrastructure.Bases
     {
         [Inject]
         public IBoardService BoardDataService { get; set; }
+        [Inject]
         public IImageService ImageDataService { get; set; }
 
         public FullBoard FullBoard { get; set; }
@@ -25,6 +26,17 @@ namespace Infrastructure.Bases
         protected async Task GetThreads(string boardName)
         {
             FullBoard.Threads = await BoardDataService.GetBoardCatalog(boardName).ConfigureAwait(false);
+        }
+
+        protected async Task GetThreadPosts(string board, long threadNumber)
+        {
+            var posts = await BoardDataService.GetThreadPosts(board,threadNumber).ConfigureAwait(false);
+            FullBoard.Posts = posts.Posts;
+        }
+
+        protected int ConvertBytesToKiloBytes(int bytes)
+        {
+            return ImageDataService.CalculateFileSizeInKiloBytes(bytes);
         }
 
         private string CleanInput(string strIn)

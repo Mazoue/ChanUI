@@ -17,45 +17,92 @@ else if (FullBoard.Threads == null)
                 <th></th>
                 <th>Board</th>
                 <th>Description</th>
-
             </tr>
         </thead>
         <tbody>
             @foreach (var board in FullBoard.Boards.boards)
             {
-            <tr>
-                <td><button type="button" @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">Download All</button></td>
-                <td><button type="button" @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">Expand</button></td>
-                <td>@board.board</td>
-                <td>@WebUtility.HtmlDecode(board.meta_description)</td>
-            </tr>
+                <tr>
+                    <td><button type="button" @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">Download All</button></td>
+                    <td>
+                        <button type="button" @onclick="@(async ()=>
+                                                    {
+                                                        FullBoard.CurrentBoard = board.board;
+                                                        await GetThreads(board.board).ConfigureAwait(false);
+                                                    })">
+                            Expand
+                        </button>
+                    </td>
+                    <td>@board.board</td>
+                    <td>@WebUtility.HtmlDecode(board.meta_description)</td>
+                </tr>
             }
         </tbody>
     </table>
 }
-else
+else if(FullBoard.Threads != null && FullBoard.Posts == null)
 {
+    <h1 class="page-title">All Threads</h1>
     <table class="table">
         <thead>
-        <tr>
-            <th>Thread Id</th>
-            <th>Description</th>
-
-        </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>Thread Id</th>
+                <th>Description</th>
+            </tr>
         </thead>
         <tbody>
             @foreach (var page in FullBoard.Threads)
             {
                 foreach (var thread in page.threads)
                 {
-            <tr>
-                <td>@thread.tim</td>
-                <td>@thread.sub</td>
-                <td>@thread.com</td>
-            </tr>
+                    <tr>
+                        <td><button type="button" @onclick="@(async ()=>await GetThreadPosts(FullBoard.CurrentBoard,thread.tim).ConfigureAwait(false))">Download All</button></td>
+                        <td><button type="button" @onclick="@(async () =>
+                                                            {
+                                                                FullBoard.CurrentThread = thread.no;
+                                                                await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
+                                                            })">Expand</button></td>
+                        <td>@thread.no</td>
+                        <td>@thread.sub</td>
+                        <td>@thread.com</td>
+                    </tr>
                 }
 
             }
         </tbody>
     </table>
+}
+else if (FullBoard.Threads != null && FullBoard.Posts != null)
+{
+    <h1 class="page-title">All Posts</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Post Id</th>
+                <th>File Name</th>
+                <th>File Extension</th>
+                <th>File Size(KB)</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var post in FullBoard.Posts)
+        {
+            
+                <tr>
+                    <td><button type="button" @onclick="@(async ()=>await GetThreadPosts(FullBoard.CurrentBoard,post.no).ConfigureAwait(false))">Download</button></td>
+                    <td>@post.no</td>
+                    <td>@post.filename</td>
+                    <td>@post.ext</td>
+                    <td>@ConvertBytesToKiloBytes(post.fsize)</td>
+                    <td>@post.com</td>
+                </tr>
+            
+
+        }
+        </tbody>
+        </table>
 }
