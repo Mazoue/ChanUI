@@ -23,7 +23,28 @@ else if (FullBoard.Threads == null)
             @foreach (var board in FullBoard.Boards.boards)
             {
                 <tr>
-                    <td><button type="button" @onclick="@(async ()=>await GetThreads(board.board).ConfigureAwait(false))">Download All</button></td>
+                    <td><button type="button" @onclick="@(async () =>
+                                                        {
+                                                            FullBoard.CurrentBoard = board.board;
+                                                            await GetThreads(board.board).ConfigureAwait(false);
+                                                            foreach (var page in FullBoard.Threads)
+                                                            {
+                                                                foreach (var thread in page.threads)
+                                                                {
+                                                                    FullBoard.CurrentThreadId = thread.no;
+                                                                    FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub)?thread.sub:"Misc";
+                                                                    await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
+                                                                    foreach (var post in FullBoard.Posts)
+                                                                    {
+                                                                      if (post.fsize > 1)
+                                                                      { 
+                                                                          await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
+                                                                      }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                        })">Download All</button></td>
                     <td>
                         <button type="button" @onclick="@(async ()=>
                                                     {
@@ -59,7 +80,20 @@ else if (FullBoard.Threads != null && FullBoard.Posts == null)
                 foreach (var thread in page.threads)
                 {
                     <tr>
-                        <td><button type="button" @onclick="@(async ()=>await GetThreadPosts(FullBoard.CurrentBoard,thread.tim).ConfigureAwait(false))">Download All</button></td>
+                        <td><button type="button" @onclick="@(async () =>
+                                                              {
+                                                                  FullBoard.CurrentThreadId = thread.no;
+                                                                  FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub)?thread.sub:"Misc";
+                                                                  await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
+                                                                  foreach (var post in FullBoard.Posts)
+                                                                  {
+                                                                      if (post.fsize > 1)
+                                                                      { 
+                                                                        await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
+                                                                      }
+                                                                  }
+
+                                                              })">Download All</button></td>
                         <td>
                             <button type="button" @onclick="@(async () =>
                                                             {
