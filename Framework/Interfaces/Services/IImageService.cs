@@ -5,7 +5,11 @@ namespace Framework.Interfaces.Services
 {
     public interface IImageService : IDisposable
     {
-        Task<string> DownloadFile(string fileUrl, string destination);
+        string GenerateFilePath(string baseFolder, string boardName, string threadName, string fileName,
+            string fileExtension);
+        Task DownloadFile(string fileUrl, string destination);
+        bool FileNameInUseExists(string path);
+        bool FolderExists(string path);
         int CalculateFileSizeInKiloBytes(int bytes);
     }
 }

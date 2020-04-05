@@ -2,14 +2,14 @@
 @using System.Net
 @inherits Infrastructure.Bases.BoardsOverviewBase
 
-<h1 class="page-title">All Boards</h1>
-
 @if (FullBoard == null)
 {
     <p><em>Loading...</em></p>
 }
 else if (FullBoard.Threads == null)
 {
+    <h1 class="page-title">All Boards</h1>
+
     <table class="table">
         <thead>
             <tr>
@@ -40,15 +40,16 @@ else if (FullBoard.Threads == null)
         </tbody>
     </table>
 }
-else if(FullBoard.Threads != null && FullBoard.Posts == null)
+else if (FullBoard.Threads != null && FullBoard.Posts == null)
 {
-    <h1 class="page-title">All Threads</h1>
+    <h1 class="page-title">@FullBoard.CurrentBoard</h1>
     <table class="table">
         <thead>
             <tr>
                 <th></th>
                 <th></th>
                 <th>Thread Id</th>
+                <th>Subject</th>
                 <th>Description</th>
             </tr>
         </thead>
@@ -59,11 +60,14 @@ else if(FullBoard.Threads != null && FullBoard.Posts == null)
                 {
                     <tr>
                         <td><button type="button" @onclick="@(async ()=>await GetThreadPosts(FullBoard.CurrentBoard,thread.tim).ConfigureAwait(false))">Download All</button></td>
-                        <td><button type="button" @onclick="@(async () =>
+                        <td>
+                            <button type="button" @onclick="@(async () =>
                                                             {
-                                                                FullBoard.CurrentThread = thread.no;
+                                                                FullBoard.CurrentThreadId = thread.no;
+                                                                FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub)?thread.sub:"Misc";
                                                                 await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
-                                                            })">Expand</button></td>
+                                                            })">Expand</button>
+                        </td>
                         <td>@thread.no</td>
                         <td>@thread.sub</td>
                         <td>@thread.com</td>
@@ -76,7 +80,7 @@ else if(FullBoard.Threads != null && FullBoard.Posts == null)
 }
 else if (FullBoard.Threads != null && FullBoard.Posts != null)
 {
-    <h1 class="page-title">All Posts</h1>
+    <h1 class="page-title">@FullBoard.CurrentThreadName</h1>
     <table class="table">
         <thead>
             <tr>
@@ -89,20 +93,20 @@ else if (FullBoard.Threads != null && FullBoard.Posts != null)
             </tr>
         </thead>
         <tbody>
-        @foreach (var post in FullBoard.Posts)
-        {
-            
-                <tr>
-                    <td><button type="button" @onclick="@(async ()=>await GetThreadPosts(FullBoard.CurrentBoard,post.no).ConfigureAwait(false))">Download</button></td>
-                    <td>@post.no</td>
-                    <td>@post.filename</td>
-                    <td>@post.ext</td>
-                    <td>@ConvertBytesToKiloBytes(post.fsize)</td>
-                    <td>@post.com</td>
-                </tr>
-            
-
-        }
+            @foreach (var post in FullBoard.Posts)
+            {
+                @if (post.fsize > 1)
+                {
+                    <tr>
+                        <td><button type="button" @onclick="@(async () => await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false))">Download</button></td>
+                        <td>@post.no</td>
+                        <td>@post.filename.Trim()</td>
+                        <td>@post.ext</td>
+                        <td>@ConvertBytesToKiloBytes(post.fsize)</td>
+                        <td>@post.com</td>
+                    </tr>
+                }
+            }
         </tbody>
-        </table>
+    </table>
 }

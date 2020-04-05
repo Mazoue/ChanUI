@@ -13,23 +13,31 @@ namespace Infrastructure.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<string> DownloadFile(string fileUrl, string destination)
+
+        public string GenerateFilePath(string baseFolder, string boardName, string threadName, string fileName, string fileExtension)
         {
-            using (var result = await _httpClient.GetAsync(fileUrl).ConfigureAwait(false))
-            {
-                if (result.IsSuccessStatusCode)
-                {
-                    await File.WriteAllBytesAsync(destination, await result.Content.ReadAsByteArrayAsync().ConfigureAwait(false))
-                        .ConfigureAwait(false);
-                }
-            }
-            return "done";
+            var fullName = $"{fileName}.{fileExtension}";
+            return Path.Combine(baseFolder, boardName, threadName, fullName);
+        }
+
+        public bool FolderExists(string path)
+        {
+            return Directory.Exists(path);
+        }
+        public bool FileNameInUseExists(string path)
+        {
+            return File.Exists(path);
+        }
+
+        public async Task DownloadFile(string fileUrl, string destination)
+        {
+            await _httpClient.GetAsync($"api/post/downloadfile?fileUrl={fileUrl}&destination={destination}")
+                .ConfigureAwait(false);
         }
 
         public int CalculateFileSizeInKiloBytes(int bytes)
         {
             return bytes / 1024;
-
         }
 
         public void Dispose()
