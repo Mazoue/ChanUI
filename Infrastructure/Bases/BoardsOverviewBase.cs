@@ -10,18 +10,14 @@ namespace Infrastructure.Bases
 {
     public class BoardsOverviewBase : ComponentBase
     {
-        [Inject]
-        public IBoardService BoardDataService { get; set; }
-        [Inject]
-        public IImageService ImageDataService { get; set; }
+        [Inject] private IBoardService BoardDataService { get; set; }
+        [Inject] private IImageService ImageDataService { get; set; }
 
-        public FullBoard FullBoard { get; set; }
-
-
+        protected FullBoard FullBoard { get; set; }
+        
         protected override async Task OnInitializedAsync()
         {
             FullBoard = new FullBoard { Boards = await BoardDataService.GetAllBoards().ConfigureAwait(false) };
-
         }
 
         protected async Task GetThreads(string boardName)
@@ -40,7 +36,6 @@ namespace Infrastructure.Bases
             return ImageDataService.CalculateFileSizeInKiloBytes(bytes);
         }
 
-        
         protected async Task DownloadPost(string baseFolder, string boardName, string threadName, Post post)
         {
             //Base Folder

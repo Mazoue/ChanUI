@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject NavigationManager NavigationManager
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Chan-UI</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -9,12 +11,12 @@
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span>Home
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="allboards">
-                <span class="oi oi-eye" aria-hidden="true"></span> Boards
+            <NavLink class="nav-link" href="allboards" @onclick="ResetView">
+                <span class="oi oi-eye" aria-hidden="true"></span>Boards
             </NavLink>
         </li>
     </ul>
@@ -29,4 +31,10 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    private void ResetView()
+    {
+        NavigationManager.NavigateTo("/allboards",true);
+    }
+
 }

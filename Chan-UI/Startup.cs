@@ -17,7 +17,7 @@ namespace Chan_UI
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -27,8 +27,8 @@ namespace Chan_UI
             services.AddServerSideBlazor();
             services.AddHttpClient<IBoardService, BoardService>(client =>
             {
-                client.BaseAddress = new Uri("https://192.168.1.3:5002/api/post/");
-                //client.BaseAddress = new Uri("https://localhost:44317/api/post/");
+               // client.BaseAddress = new Uri("https://192.168.1.3:5002/api/post/");
+                client.BaseAddress = new Uri("https://localhost:44317/api/post/");
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 var handler = new HttpClientHandler
@@ -39,8 +39,8 @@ namespace Chan_UI
             });
             services.AddHttpClient<IImageService, ImageService>(client =>
             {
-                client.BaseAddress = new Uri("https://192.168.1.3:5002");
-                //client.BaseAddress = new Uri("https://localhost:44317");
+              //  client.BaseAddress = new Uri("https://192.168.1.3:5002");
+                client.BaseAddress = new Uri("https://localhost:44317");
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 var handler = new HttpClientHandler
@@ -57,7 +57,7 @@ namespace Chan_UI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }//
+            }
             else
             {
                 app.UseExceptionHandler("/Error");
