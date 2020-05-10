@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Framework.Interfaces.Services
 {
-    public interface IBoardService : IDisposable
+    public interface IBoardService
     {
         Task<AllBoards> GetAllBoards();
         Task<IEnumerable<Catalogue>> GetBoardCatalog(string board);

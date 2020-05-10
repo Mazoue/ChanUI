@@ -39,10 +39,5 @@ namespace Infrastructure.Services
         {
             return bytes / 1024;
         }
-
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
-        }
     }
 }

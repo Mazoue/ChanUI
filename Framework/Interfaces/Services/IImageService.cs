@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Framework.Interfaces.Services
 {
-    public interface IImageService : IDisposable
+    public interface IImageService
     {
         string GenerateFilePath(string baseFolder, string boardName, string threadName, string fileName,
             string fileExtension);

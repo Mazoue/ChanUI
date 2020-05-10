@@ -41,9 +41,5 @@ namespace Infrastructure.Services
             
         }
 
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
-        }
     }
 }
