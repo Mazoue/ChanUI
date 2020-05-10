@@ -2,8 +2,9 @@
 {
     public enum LoadingStage
     {
-        Boards = 0,
-        Threads = 1,
-        Posts = 2
+        Initializing = 0,
+        Boards = 1,
+        Threads = 2,
+        Posts = 3
     }
 }

@@ -3,147 +3,102 @@
 @using Framework.Enums
 @inherits Infrastructure.Bases.BoardsOverviewBase
 
-@if (FullBoard == null)
+@switch (FullBoard?.CurrentStage)
 {
-    <p><em>Loading...</em></p>
-}
-else if (FullBoard.CurrentStage == LoadingStage.Boards)
-{
-    <h1 class="page-title">All Boards</h1>
+    case LoadingStage.Initializing:
+    case null:
+        <p><em>Loading...</em></p>
+        break;
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th></th>
-                <th>Board</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var board in FullBoard.Boards.boards)
-            {
+    case LoadingStage.Boards:
+        <h1 class="page-title">All Boards</h1>
+        <table class="table">
+            <thead>
                 <tr>
-                    <td><button type="button" @onclick="@(async () =>
-                                                        {
-                                                            FullBoard.CurrentBoard = board.board;
-                                                            await GetThreads(board.board).ConfigureAwait(false);
-                                                            foreach (var page in FullBoard.Threads)
-                                                            {
-                                                                foreach (var thread in page.threads)
-                                                                {
-                                                                    FullBoard.CurrentThreadId = thread.no;
-                                                                    FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub)?thread.sub:"Misc";
-                                                                    await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
-                                                                    foreach (var post in FullBoard.Posts)
-                                                                    {
-                                                                      if (post.fsize > 1)
-                                                                      { 
-                                                                          await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
-                                                                      }
-                                                                    }
-                                                                }
-                                                            }
-
-                                                        })">Download All</button></td>
-                    <td>
-                        <button type="button" @onclick="@(async ()=>
-                                                    {
-                                                        FullBoard.CurrentBoard = board.board;
-                                                        await GetThreads(board.board).ConfigureAwait(false);
-                                                        FullBoard.CurrentStage = LoadingStage.Threads;
-                                                    })">
-                            Expand
-                        </button>
-                    </td>
-                    <td>@board.board</td>
-                    <td>@WebUtility.HtmlDecode(board.meta_description)</td>
+                    <th></th>
+                    <th></th>
+                    <th>Board</th>
+                    <th>Description</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
-else if (FullBoard.CurrentStage == LoadingStage.Threads)
-{
-    <h1 class="page-title">@FullBoard.CurrentBoard</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th></th>
-                <th>Thread Id</th>
-                <th>Subject</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var page in FullBoard.Threads)
-            {
-                foreach (var thread in page.threads)
+            </thead>
+            <tbody>
+                @foreach (var board in FullBoard.Boards.boards)
                 {
                     <tr>
-                        <td><button type="button" @onclick="@(async () =>
-                                                              {
-                                                                  FullBoard.CurrentThreadId = thread.no;
-                                                                  FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub)?thread.sub:"Misc";
-                                                                  await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
-                                                                  foreach (var post in FullBoard.Posts)
-                                                                  {
-                                                                      if (post.fsize > 1)
-                                                                      { 
-                                                                        await DownloadPost("I:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
-                                                                      }
-                                                                  }
-
-                                                              })">Download All</button></td>
-                        <td>
-                            <button type="button" @onclick="@(async () =>
-                                                            {
-                                                                FullBoard.CurrentThreadId = thread.no;
-                                                                FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub)?thread.sub:"Misc";
-                                                                await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
-                                                                FullBoard.CurrentStage = LoadingStage.Posts;
-                                                            })">Expand</button>
-                        </td>
-                        <td>@thread.no</td>
-                        <td>@thread.sub</td>
-                        <td>@thread.com</td>
+                        <td><button type="button" @onclick="@(async () => await DownloadBoardPosts(board.board))">Download All</button></td>
+                        <td><button type="button" @onclick="@(async ()=> await ExpandBoardThreads(board.board))">Expand</button></td>
+                        <td>@board.board</td>
+                        <td>@WebUtility.HtmlDecode(board.meta_description)</td>
                     </tr>
                 }
+            </tbody>
+        </table>
+        break;
 
-            }
-        </tbody>
-    </table>
-}
-else if (FullBoard.CurrentStage == LoadingStage.Posts)
-{
-    <h1 class="page-title">@FullBoard.CurrentThreadName</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Post Id</th>
-                <th>File Name</th>
-                <th>File Extension</th>
-                <th>File Size(KB)</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var post in FullBoard.Posts)
-            {
-                @if (post.fsize > 1)
+    case LoadingStage.Threads:
+        <h1 class="page-title">@FullBoard.CurrentBoard</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Thread Id</th>
+                    <th>Subject</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var page in FullBoard.Threads)
                 {
-                    <tr>
-                        <td><button type="button" @onclick="@(async () => await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false))">Download</button></td>
-                        <td>@post.no</td>
-                        <td>@post.filename.Trim()</td>
-                        <td>@post.ext</td>
-                        <td>@ConvertBytesToKiloBytes(post.fsize)</td>
-                        <td>@post.com</td>
-                    </tr>
+                    foreach (var thread in page.threads)
+                    {
+                        <tr>
+                            <td><button type="button" @onclick="@(async()=>await DownloadThreadPosts(thread))">Download All</button></td>
+                            <td><button type="button" @onclick="@(async () =>await ExpandThreadPosts(thread))">Expand</button></td>
+                            <td>@thread.no</td>
+                            <td>@thread.sub</td>
+                            <td>@thread.com</td>
+                        </tr>
+                    }
+
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        break;
+
+    case LoadingStage.Posts:
+        <h1 class="page-title">@FullBoard.CurrentThreadName</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Post Id</th>
+                    <th>File Name</th>
+                    <th>File Extension</th>
+                    <th>File Size(KB)</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var post in FullBoard.Posts)
+                {
+                    @if (post.fsize > 1)
+                    {
+                        <tr>
+                            <td><button type="button" @onclick="@(async () => await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false))">Download</button></td>
+                            <td>@post.no</td>
+                            <td>@post.filename.Trim()</td>
+                            <td>@post.ext</td>
+                            <td>@ConvertBytesToKiloBytes(post.fsize)</td>
+                            <td>@post.com</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        break;
+
+    default:
+        <p><em>Error, unmatched loading stage</em></p>
+        break;
 }

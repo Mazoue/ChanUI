@@ -5,7 +5,7 @@ namespace Framework.Datamodels
 {
     public class FullBoard
     {
-        public LoadingStage CurrentStage { get; set; } = LoadingStage.Boards;
+        public LoadingStage CurrentStage { get; set; } = LoadingStage.Initializing;
        
         public string CurrentBoard { get; set; }
         public long CurrentThreadId { get; set;}

@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Framework.Enums;
 
 namespace Infrastructure.Bases
 {
@@ -17,15 +18,19 @@ namespace Infrastructure.Bases
         
         protected override async Task OnInitializedAsync()
         {
-            FullBoard = new FullBoard { Boards = await BoardDataService.GetAllBoards().ConfigureAwait(false) };
+            FullBoard = new FullBoard
+            {
+                CurrentStage = LoadingStage.Boards,
+                Boards = await BoardDataService.GetAllBoards().ConfigureAwait(false)
+            };
         }
 
-        protected async Task GetThreads(string boardName)
+        private async Task GetThreads(string boardName)
         {
             FullBoard.Threads = await BoardDataService.GetBoardCatalog(boardName).ConfigureAwait(false);
         }
 
-        protected async Task GetThreadPosts(string board, long threadNumber)
+        private async Task GetThreadPosts(string board, long threadNumber)
         {
             var posts = await BoardDataService.GetThreadPosts(board, threadNumber).ConfigureAwait(false);
             FullBoard.Posts = posts.Posts;
@@ -35,6 +40,67 @@ namespace Infrastructure.Bases
         {
             return ImageDataService.CalculateFileSizeInKiloBytes(bytes);
         }
+
+        #region Button Methods
+        #region Boards
+
+        protected async Task DownloadBoardPosts(string currentBoard)
+        {
+            FullBoard.CurrentBoard = currentBoard;
+            await GetThreads(currentBoard).ConfigureAwait(false);
+            foreach (var page in FullBoard.Threads)
+            {
+                foreach (var thread in page.threads)
+                {
+                    FullBoard.CurrentThreadId = thread.no;
+                    FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub) ? thread.sub : "Misc";
+                    await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
+                    foreach (var post in FullBoard.Posts)
+                    {
+                        if (post.fsize > 1)
+                        {
+                            await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+        }
+
+        protected async Task ExpandBoardThreads(string currentBoard)
+        {
+            FullBoard.CurrentBoard = currentBoard;
+            await GetThreads(currentBoard).ConfigureAwait(false);
+            FullBoard.CurrentStage = LoadingStage.Threads;
+        }
+
+        #endregion
+
+        #region Threads
+        protected async Task DownloadThreadPosts(Thread currentThread)
+        {
+            FullBoard.CurrentThreadId = currentThread.no;
+            FullBoard.CurrentThreadName = !string.IsNullOrEmpty(currentThread.sub) ? currentThread.sub : "Misc";
+            await GetThreadPosts(FullBoard.CurrentBoard, currentThread.no).ConfigureAwait(false);
+            foreach (var post in FullBoard.Posts)
+            {
+                if (post.fsize > 1)
+                {
+                    await DownloadPost("I:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
+                }
+            }
+        }
+
+        protected async Task ExpandThreadPosts(Thread currentThread)
+        {
+            FullBoard.CurrentThreadId = currentThread.no;
+            FullBoard.CurrentThreadName = !string.IsNullOrEmpty(currentThread.sub) ? currentThread.sub : "Misc";
+            await GetThreadPosts(FullBoard.CurrentBoard, currentThread.no).ConfigureAwait(false);
+            FullBoard.CurrentStage = LoadingStage.Posts;
+        }
+
+        #endregion
+
+        #endregion
 
         protected async Task DownloadPost(string baseFolder, string boardName, string threadName, Post post)
         {
