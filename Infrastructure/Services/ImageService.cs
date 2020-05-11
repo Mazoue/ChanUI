@@ -31,6 +31,7 @@ namespace Infrastructure.Services
 
         public async Task DownloadFile(string fileUrl, string destination)
         {
+            //CATCH 500
             await _httpClient.GetAsync($"api/post/downloadfile?fileUrl={fileUrl}&destination={destination}")
                 .ConfigureAwait(false);
         }

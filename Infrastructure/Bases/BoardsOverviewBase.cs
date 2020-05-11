@@ -1,13 +1,13 @@
 ﻿using Framework.Datamodels;
+using Framework.Enums;
 using Framework.Interfaces.Services;
+using Framework.Interfaces.Settings;
 using Microsoft.AspNetCore.Components;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Framework.Enums;
-using Framework.Interfaces.Settings;
-using Framework.Settings;
 
 namespace Infrastructure.Bases
 {
@@ -18,7 +18,7 @@ namespace Infrastructure.Bases
         [Inject] private IDataAccessSettings DataAccessSettings { get; set; }
 
         protected FullBoard FullBoard { get; set; }
-        
+
         protected override async Task OnInitializedAsync()
         {
             FullBoard = new FullBoard
@@ -58,13 +58,9 @@ namespace Infrastructure.Bases
                     FullBoard.CurrentThreadId = thread.no;
                     FullBoard.CurrentThreadName = !string.IsNullOrEmpty(thread.sub) ? thread.sub : "Misc";
                     await GetThreadPosts(FullBoard.CurrentBoard, thread.no).ConfigureAwait(false);
-                    foreach (var post in FullBoard.Posts)
-                    {
-                        if (post.fsize > 1)
-                        {
-                            await DownloadPost(DataAccessSettings.IoSettings.BaseFolder, FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
-                        }
-                    }
+                    await ParseBoardPosts(FullBoard.Posts, FullBoard.CurrentBoard, FullBoard.CurrentThreadName)
+                        .ConfigureAwait(false);
+
                 }
             }
         }
@@ -84,13 +80,9 @@ namespace Infrastructure.Bases
             FullBoard.CurrentThreadId = currentThread.no;
             FullBoard.CurrentThreadName = !string.IsNullOrEmpty(currentThread.sub) ? currentThread.sub : "Misc";
             await GetThreadPosts(FullBoard.CurrentBoard, currentThread.no).ConfigureAwait(false);
-            foreach (var post in FullBoard.Posts)
-            {
-                if (post.fsize > 1)
-                {
-                    await DownloadPost(DataAccessSettings.IoSettings.BaseFolder, FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
-                }
-            }
+            await ParseBoardPosts(FullBoard.Posts, FullBoard.CurrentBoard, FullBoard.CurrentThreadName)
+                .ConfigureAwait(false);
+
         }
 
         protected async Task ExpandThreadPosts(Thread currentThread)
@@ -105,13 +97,24 @@ namespace Infrastructure.Bases
 
         #endregion
 
-        protected async Task DownloadPost(string baseFolder, string boardName, string threadName, Post post)
+        private async Task ParseBoardPosts(IEnumerable<Post> boardPosts, string currentBoard, string currentThreadName)
+        {
+            foreach (var post in boardPosts)
+            {
+                if (post.fsize > 1)
+                {
+                    await DownloadPost(currentBoard, currentThreadName, post).ConfigureAwait(false);
+                }
+            }
+        }
+
+        protected async Task DownloadPost(string boardName, string threadName, Post post)
         {
             //Base Folder
-            System.IO.Directory.CreateDirectory(baseFolder);
+            System.IO.Directory.CreateDirectory(DataAccessSettings.IoSettings.BaseFolder);
 
             //Base Folder + BoardName
-            var baseFolderBoardName = Path.Combine(baseFolder, boardName);
+            var baseFolderBoardName = Path.Combine(DataAccessSettings.IoSettings.BaseFolder, boardName);
             System.IO.Directory.CreateDirectory(baseFolderBoardName);
 
             //Base Folder + BoardName + ThreadName
