@@ -14,4 +14,8 @@
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="3.3.0-dev-00161" />
+  </ItemGroup>
+
 </Project>

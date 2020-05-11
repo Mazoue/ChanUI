@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 namespace Chan_UI
 {
@@ -16,6 +18,11 @@ namespace Chan_UI
                 {
                     webBuilder.UseUrls("https://192.168.1.3:5003");
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+                    .ReadFrom.Configuration(hostingContext.Configuration)
+                    .Enrich.FromLogContext()
+                    .WriteTo.File(new RenderedCompactJsonFormatter(), "..\\Logs\\Log.log"));
+
     }
 }
