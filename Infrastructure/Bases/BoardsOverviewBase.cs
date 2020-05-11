@@ -6,6 +6,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Framework.Enums;
+using Framework.Interfaces.Settings;
+using Framework.Settings;
 
 namespace Infrastructure.Bases
 {
@@ -13,6 +15,7 @@ namespace Infrastructure.Bases
     {
         [Inject] private IBoardService BoardDataService { get; set; }
         [Inject] private IImageService ImageDataService { get; set; }
+        [Inject] private IDataAccessSettings DataAccessSettings { get; set; }
 
         protected FullBoard FullBoard { get; set; }
         
@@ -59,7 +62,7 @@ namespace Infrastructure.Bases
                     {
                         if (post.fsize > 1)
                         {
-                            await DownloadPost("D:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
+                            await DownloadPost(DataAccessSettings.IoSettings.BaseFolder, FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
                         }
                     }
                 }
@@ -85,7 +88,7 @@ namespace Infrastructure.Bases
             {
                 if (post.fsize > 1)
                 {
-                    await DownloadPost("I:\\ImageDump", FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
+                    await DownloadPost(DataAccessSettings.IoSettings.BaseFolder, FullBoard.CurrentBoard, FullBoard.CurrentThreadName, post).ConfigureAwait(false);
                 }
             }
         }

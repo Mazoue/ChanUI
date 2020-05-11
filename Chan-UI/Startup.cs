@@ -1,12 +1,9 @@
-using Framework.Interfaces.Services;
-using Infrastructure.Services;
+using Framework.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Net.Http;
 
 namespace Chan_UI
 {
@@ -23,32 +20,14 @@ namespace Chan_UI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            RegisterContainerServices(services);
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddHttpClient<IBoardService, BoardService>(client =>
-            {
-               // client.BaseAddress = new Uri("https://192.168.1.3:5002/api/post/");
-                client.BaseAddress = new Uri("https://localhost:44317/api/post/");
-            }).ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                var handler = new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-                };
-                return handler;
-            });
-            services.AddHttpClient<IImageService, ImageService>(client =>
-            {
-              //  client.BaseAddress = new Uri("https://192.168.1.3:5002");
-                client.BaseAddress = new Uri("https://localhost:44317");
-            }).ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                var handler = new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-                };
-                return handler;
-            }); 
+        }
+
+        private void RegisterContainerServices(IServiceCollection services)
+        {
+            services.AddDataAccessServices(Configuration.GetSection("CustomAppSettings").Get<CustomAppSettings>().DataAccessSettings);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

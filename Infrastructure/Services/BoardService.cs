@@ -1,5 +1,4 @@
-﻿using System;
-using Framework.Datamodels;
+﻿using Framework.Datamodels;
 using Framework.Interfaces.Services;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -34,11 +33,11 @@ namespace Infrastructure.Services
 
         public async Task<ThreadPosts> GetThreadPosts(string board, long threadNumber)
         {
-                return await JsonSerializer
-                    .DeserializeAsync<ThreadPosts>(
-                        await _httpClient.GetStreamAsync($"posts?board={board}&threadnumber={threadNumber}"),
-                        new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }).ConfigureAwait(false);
-            
+            return await JsonSerializer
+                .DeserializeAsync<ThreadPosts>(
+                    await _httpClient.GetStreamAsync($"posts?board={board}&threadnumber={threadNumber}"),
+                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }).ConfigureAwait(false);
+
         }
 
     }
