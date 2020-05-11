@@ -21,8 +21,7 @@ namespace Chan_UI
                 })
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
                     .ReadFrom.Configuration(hostingContext.Configuration)
-                    .Enrich.FromLogContext()
-                    .WriteTo.File(new RenderedCompactJsonFormatter(), "..\\Logs\\Log.log"));
+                    .Enrich.FromLogContext());
 
     }
 }
