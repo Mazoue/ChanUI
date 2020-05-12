@@ -13,7 +13,6 @@ namespace Chan_UI
         public static void AddDataAccessServices(this IServiceCollection services, DataAccessSettings settings)
         {
             services.AddSingleton<IDataAccessSettings, DataAccessSettings>(s => settings);
-
             services.AddHttpClient<IBoardService, BoardService>(client =>
             {
                 client.BaseAddress = new Uri(settings.EndpointUrlSettings.BoardServiceEndPoint);
