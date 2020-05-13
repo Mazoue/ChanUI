@@ -19,6 +19,7 @@
                     <th></th>
                     <th>Board</th>
                     <th>Description</th>
+                    <th>Number of Threads</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,7 @@
                         <td><button type="button" @onclick="@(async ()=> await ExpandBoardThreads(board.board))">Expand</button></td>
                         <td>@board.board</td>
                         <td>@WebUtility.HtmlDecode(board.meta_description)</td>
+                        <td>@(board.pages*board.per_page)</td>
                     </tr>
                 }
             </tbody>
@@ -45,6 +47,7 @@
                     <th>Thread Id</th>
                     <th>Subject</th>
                     <th>Description</th>
+                    <th>Number of Posts</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +61,7 @@
                             <td>@thread.no</td>
                             <td>@thread.sub</td>
                             <td>@thread.com</td>
+                            <td>@thread.images</td>
                         </tr>
                     }
 

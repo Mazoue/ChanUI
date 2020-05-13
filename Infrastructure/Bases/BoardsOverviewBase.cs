@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Framework.Datamodels.Downloads;
 
 namespace Infrastructure.Bases
 {
@@ -18,6 +19,7 @@ namespace Infrastructure.Bases
         [Inject] private IDataAccessSettings DataAccessSettings { get; set; }
 
         protected FullBoard FullBoard { get; set; }
+        protected IEnumerable<Download> CurrentDownloads { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -26,6 +28,7 @@ namespace Infrastructure.Bases
                 CurrentStage = LoadingStage.Boards,
                 Boards = await BoardDataService.GetAllBoards().ConfigureAwait(false)
             };
+            CurrentDownloads = new List<Download>();
         }
 
         private async Task GetThreads(string boardName)
