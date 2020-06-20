@@ -15,7 +15,7 @@ namespace Chan_UI
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("https://192.168.1.3:5003");
+                    //webBuilder.UseUrls("https://192.168.1.3:5003");
                     webBuilder.UseStartup<Startup>();
                 })
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
